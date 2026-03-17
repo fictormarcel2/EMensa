@@ -1,0 +1,17 @@
+{
+  "name": "emensa/mvc",
+  "authors": [
+    {
+      "name": "Marcel Remmy",
+      "email": "remmy@fh-aachen.de"
+    }
+  ],
+  "description": "MVC routing script for exercises in module Datenbanken und Webtechnologien",
+  "license": "proprietary",
+  "require": {
+    "eftec/bladeone": "^4.19",
+    "ext-mysqli": "*",
+    "ext-json": "*",
+    "monolog/monolog": "^3.9"
+  }
+}
