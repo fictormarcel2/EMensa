@@ -17,16 +17,11 @@ I used a custom MVC architecture to handle routing, secure user sessions, and da
 If you want to test this application on your own machine, here is the quick setup guide:
 
 1. Clone this repository to your local computer.
-2. **Database Setup:** Open your database manager (like phpMyAdmin) and
-create a new database named `emensawerbeseite`.
-3. Run the `database/init.sql` script included in this repository.
-This will automatically build all the required tables,
-establish the relational keys, and insert the test data.
-4. **Connect the App:** Open the database configuration file in the project
-(usually in the `models` or `config` folder) and
+2. **Database Setup:** Open your database manager (like phpMyAdmin) and create a new database named `emensawerbeseite`.
+3. Run the `database/init.sql` script included in this repository. This will automatically build all the required tables, establish the relational keys, and insert the test data.
+4. **Connect the App:** Open the database configuration file in the project (usually in the `models` or `config` folder)
 5. update the `mysqli_connect` line with your local database username and password.
-6. Start the local PHP development server by opening your terminal
-in the main folder and running the command below:
+6. Start the local PHP development server by opening your terminal in the main folder and running the command below:
    `php -S localhost:8000 -t public`
 7. Open your browser and go to `http://localhost:8000`.
 
