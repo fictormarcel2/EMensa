@@ -1,0 +1,55 @@
+name: Development checks
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  docker-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Configure disposable development environment
+        run: cp .env.example .env
+      - name: Validate Compose configuration
+        run: docker compose config --quiet
+      - name: Check repository structure and documentation links
+        run: python3 scripts/check_repository.py
+      - name: Build and start healthy services
+        run: docker compose up --build --detach --wait --wait-timeout 120
+      - name: Validate dependencies and PHP syntax
+        run: docker compose exec -T backend composer check
+      - name: Exercise API health and removed legacy routes
+        run: docker compose exec -T backend composer smoke
+      - name: Test domain, persistence, privacy and reminder behavior
+        run: docker compose exec -T backend composer test
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install frontend test dependencies
+        working-directory: web
+        run: |
+          npm install --global npm@11.6.2
+          npm ci
+      - name: Type check, build and component behavior
+        working-directory: web
+        run: npm run check
+      - name: Install browser for integration checks
+        working-directory: web
+        run: npx playwright install --with-deps chromium
+      - name: Verify real browser flows and responsive accessibility
+        run: node scripts/browser-check.mjs
+      - name: Show service logs on failure
+        if: failure()
+        run: docker compose logs --tail=100
+      - name: Stop this job's containers
+        if: always()
+        run: docker compose down

@@ -1,0 +1,27 @@
+CREATE TABLE IF NOT EXISTS push_subscriptions (
+ id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ user_id BIGINT UNSIGNED NOT NULL,
+ endpoint TEXT NOT NULL,
+ endpoint_hash CHAR(64) NOT NULL UNIQUE,
+ p256dh TEXT NOT NULL,
+ auth TEXT NOT NULL,
+ active BOOLEAN NOT NULL DEFAULT TRUE,
+ created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ INDEX (user_id, active),
+ FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+CREATE TABLE IF NOT EXISTS reminder_jobs (
+ id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ plan_id BIGINT UNSIGNED NOT NULL,
+ plan_version INT NOT NULL,
+ subscription_id BIGINT UNSIGNED NOT NULL,
+ due_at DATETIME NOT NULL,
+ status VARCHAR(20) NOT NULL DEFAULT 'pending',
+ attempts INT NOT NULL DEFAULT 0,
+ last_error VARCHAR(100) NULL,
+ sent_at DATETIME NULL,
+ UNIQUE (plan_id, plan_version, subscription_id),
+ INDEX (status, due_at),
+ FOREIGN KEY (plan_id) REFERENCES lunch_plans(id) ON DELETE CASCADE,
+ FOREIGN KEY (subscription_id) REFERENCES push_subscriptions(id) ON DELETE CASCADE
+);

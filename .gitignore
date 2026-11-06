@@ -1,10 +1,43 @@
+# Local credentials
+.env
+.env.*
+!.env.example
+**/secrets/
+*.key
+*.pem
+*.p12
+*.pfx
+*.private.json
+*.secret.json
 
-# Default ignored files
-/shelf/
-/workspace.xml
-# Editor-based HTTP Client requests
-/httpRequests/
-# Datasource local storage ignored files
-/dataSources/
-/dataSources.local.xml
-.idea
+# Dependencies and generated output
+**/vendor/
+**/node_modules/
+**/dist/
+**/build/
+**/coverage/
+**/.vite/
+**/.cache/
+*.tsbuildinfo
+.eslintcache
+.php-cs-fixer.cache
+**/test-results/
+**/playwright-report/
+**/.phpunit.cache/
+**/storage/cache/*
+**/storage/logs/*
+**/backups/*
+**/storage/private/
+**/storage/exports/
+**/database/exports/
+*.sql.gz
+*.log
+/tmp/
+
+# Editors and operating systems
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.swp

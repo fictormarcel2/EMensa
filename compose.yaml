@@ -1,0 +1,98 @@
+name: mensatogether
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: docker/web.Dockerfile
+    ports:
+      - "127.0.0.1:${WEB_PORT:-8080}:8080"
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:8080/"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+  backend:
+    build:
+      context: ./backend
+      target: development
+    command: ["sh", "-c", "php scripts/migrate.php && php scripts/seed.php && exec php -S 0.0.0.0:8000 -t public public/index.php"]
+    ports:
+      - "127.0.0.1:${BACKEND_PORT:-8081}:8000"
+    environment:
+      DB_HOST: db
+      DB_PORT: "3306"
+      DB_DATABASE: ${DB_DATABASE:-mensatogether}
+      DB_USERNAME: ${DB_USERNAME:-mensatogether}
+      DB_PASSWORD: ${DB_PASSWORD:?Copy .env.example to .env before starting}
+      TZ: Europe/Berlin
+      VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY:-}
+      VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY:-}
+      VAPID_SUBJECT: ${VAPID_SUBJECT:-mailto:admin@example.invalid}
+    volumes:
+      - ./docker/php/development.ini:/usr/local/etc/php/conf.d/mensatogether.ini:ro
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "php", "-r", "exit((json_decode(@file_get_contents('http://127.0.0.1:8000/health'), true)['status'] ?? '') === 'ok' ? 0 : 1);"]
+      interval: 10s
+      timeout: 5s
+      start_period: 15s
+      retries: 6
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+  reminders:
+    build:
+      context: ./backend
+      target: development
+    command: ["php", "scripts/reminders.php", "--watch"]
+    environment:
+      DB_HOST: db
+      DB_PORT: "3306"
+      DB_DATABASE: ${DB_DATABASE:-mensatogether}
+      DB_USERNAME: ${DB_USERNAME:-mensatogether}
+      DB_PASSWORD: ${DB_PASSWORD:?Copy .env.example to .env before starting}
+      TZ: Europe/Berlin
+      VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY:-}
+      VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY:-}
+      VAPID_SUBJECT: ${VAPID_SUBJECT:-mailto:admin@example.invalid}
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+  db:
+    image: mariadb:11.4
+    environment:
+      MARIADB_DATABASE: ${DB_DATABASE:-mensatogether}
+      MARIADB_USER: ${DB_USERNAME:-mensatogether}
+      MARIADB_PASSWORD: ${DB_PASSWORD:?Copy .env.example to .env before starting}
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?Set DB_ROOT_PASSWORD in .env}
+      TZ: Europe/Berlin
+    volumes:
+      - database_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      start_period: 30s
+      retries: 12
+
+volumes:
+  database_data:

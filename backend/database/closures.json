@@ -1,0 +1,4 @@
+{
+  "_policy": "Maintain operator-confirmed date-specific mensa service overrides here. Keys are mensa IDs, then YYYY-MM-DD; [] closes a date, otherwise [{start:HH:MM,end:HH:MM}]. Do not invent closures.",
+  "overrides": {}
+}
