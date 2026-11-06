@@ -1,32 +1,53 @@
-# E Mensa Web Application
+# MensaTogether
 
-Hello! I am Fictor marcelbrian, an Informatics student at FH Aachen.
-This repository contains my E Mensa web application,
-which I built completely from scratch for my Database and Web Technologies module.
+A responsive lunch coordination web app for FH Aachen. Compare submitted lunch times, choose exactly one arrival slot, and share a confirmed plan with consenting friends.
 
-This project is a fully functional cafeteria management and ordering system.
-I used a custom MVC architecture to handle routing, secure user sessions, and database models.
+The approved **Campus Navy** interface uses Ice, Navy and Amber in a 60–30–10 balance. UI and documentation are English. Desktop and mobile browsers are supported; native applications and home-screen widgets are outside the current scope.
 
-## Technologies Used
-* Backend: PHP 8
-* Database: MariaDB
-* Frontend: HTML5, CSS3
+## Run locally
 
-## How to Run This Project Locally
+Docker Desktop with Linux containers and Docker Compose v2 is required. Copy `.env.example` to `.env`, then run from this directory:
 
-If you want to test this application on your own machine, here is the quick setup guide:
+```sh
+docker compose up --build --detach --wait
+```
 
-1. Clone this repository to your local computer.
-2. **Database Setup:** Open your database manager (like phpMyAdmin) and create a new database named `emensawerbeseite`.
-3. Run the `database/init.sql` script included in this repository. This will automatically build all the required tables, establish the relational keys, and insert the test data.
-4. **Connect the App:** Open the database configuration file in the project (usually in the `models` or `config` folder)
-5. update the `mysqli_connect` line with your local database username and password.
-6. Start the local PHP development server by opening your terminal in the main folder and running the command below:
-   `php -S localhost:8000 -t public`
-7. Open your browser and go to `http://localhost:8000`.
+Open **http://127.0.0.1:8080**. The separate API health endpoint is http://127.0.0.1:8081/api/health. Use the explicitly labelled fictional evaluation accounts shown by the app. They are for local evaluation only; this is not campus SSO or a production identity system.
 
-## Demo Account
-You can log in and test the secure features (like the visitor counter and wishlist system)
-using this admin account:
-* **Email:** admin@emensa.example
-* **Password:** admin123
+The stack runs the web client, PHP API, MariaDB and a browser-reminder worker. No host PHP, Composer or database installation is needed. The database port is internal. Data survives `docker compose down`.
+
+## Product rules
+
+- Exactly one confirmed slot per user and Berlin-local date, across all mensas.
+- Only future slots fitting published service intervals can be saved. Eupener’s 14:15–14:30 service break is excluded.
+- Counts represent submitted plans, not occupancy or queue length.
+- Plans are private by default. Accepted friends only receive explicitly shared details.
+- Dates, mensa, meeting point, privacy and reminder choices are confirmed before saving. Comparing a time does not save it.
+- Menu dishes and prices are clearly labelled samples, not the current operator menu.
+- Browser reminders require permission, configured Web Push transport and a supported browser. Native widgets are excluded.
+
+## Repository
+
+```text
+.github/       CI workflows
+.planning/     Canonical plan and execution evidence
+backend/       PHP JSON API, schema, tests and worker
+docker/        Web build, reverse proxy and PHP configuration
+docs/          Setup, API, design, source evidence and evaluation
+scripts/       Repository and integration checks
+web/           React, TypeScript and Vite client
+```
+
+The previous EMensa coursework architecture was removed from the working tree and remains recoverable in Git history.
+
+## Documentation
+
+- [Development and verification](docs/development.md)
+- [API contract](docs/api.md)
+- [Canonical plan](.planning/plan.md) and [execution record](.planning/progress.md)
+- [Architecture](docs/architecture/repository.md)
+- [Campus Navy design](docs/design/README.md)
+- [Official opening-hour evidence](docs/reference/opening-hours.md)
+- [Documentation index](docs/README.md)
+
+See the execution record for actual verification results and remaining limitations. A working local demo is not evidence of production readiness or a completed participant study.

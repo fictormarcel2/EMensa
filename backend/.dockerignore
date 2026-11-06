@@ -1,0 +1,12 @@
+vendor
+.env
+.env.*
+*.log
+.phpunit.cache
+**/secrets
+**/*.key
+**/*.pem
+**/*.p12
+**/*.pfx
+**/*.private.json
+**/*.secret.json

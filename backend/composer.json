@@ -1,0 +1,30 @@
+{
+  "name": "fictormarcel2/mensatogether-backend",
+  "description": "MensaTogether API foundation",
+  "type": "project",
+  "license": "proprietary",
+  "require": {
+    "php": ">=8.2",
+    "ext-json": "*",
+    "ext-mysqli": "*",
+    "minishlink/web-push": "^9.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "MensaTogether\\": "src/"
+    }
+  },
+  "config": {
+    "sort-packages": true,
+    "platform": {
+      "php": "8.4.0"
+    },
+    "allow-plugins": false
+  },
+  "scripts": {
+    "lint": "@php scripts/lint.php",
+    "check": ["@composer validate --strict", "@lint"],
+    "smoke": "@php tests/health.php",
+    "test": ["@php tests/domain.php", "@php tests/api.php", "@php tests/reminders.php --database"]
+  }
+}

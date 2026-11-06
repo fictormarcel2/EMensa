@@ -1,0 +1,15 @@
+# Optional live PHP source editing. The default stack uses image files to avoid
+# slow host filesystem round trips, especially in Windows OneDrive folders.
+services:
+  backend:
+    volumes:
+      - ./backend/src:/workspace/backend/src:ro
+      - ./backend/public:/workspace/backend/public:ro
+      - ./backend/scripts:/workspace/backend/scripts:ro
+      - ./backend/tests:/workspace/backend/tests:ro
+      - ./backend/database:/workspace/backend/database:ro
+  reminders:
+    volumes:
+      - ./backend/src:/workspace/backend/src:ro
+      - ./backend/scripts:/workspace/backend/scripts:ro
+      - ./backend/database:/workspace/backend/database:ro
